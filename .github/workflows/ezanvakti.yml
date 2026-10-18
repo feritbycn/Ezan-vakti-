@@ -23,11 +23,30 @@ jobs:
         with:
           gradle-version: 8.11.1
 
+      - name: Imza anahtarini hazirla
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/nurvakit.jks"
+            echo "KS_FILE=$RUNNER_TEMP/nurvakit.jks" >> "$GITHUB_ENV"
+          fi
+
       - name: APK derle
-        run: gradle -p VakitPro assembleRelease --stacktrace --no-daemon
+        env:
+          KS_PASS: ${{ secrets.KS_PASS }}
+          KS_ALIAS: ${{ secrets.KS_ALIAS }}
+          KEY_PASS: ${{ secrets.KEY_PASS }}
+        run: gradle -p VakitPro assembleRelease bundleRelease --stacktrace --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
           name: VakitPro-apk
           path: VakitPro/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VakitPro-aab
+          path: VakitPro/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
