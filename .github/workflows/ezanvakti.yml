@@ -39,13 +39,13 @@ jobs:
           KEY_PASS: ${{ secrets.KEY_PASS }}
         run: gradle -p VakitPro assembleRelease bundleRelease --stacktrace --no-daemon
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: VakitPro-apk
           path: VakitPro/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: VakitPro-aab
           path: VakitPro/app/build/outputs/bundle/release/*.aab
